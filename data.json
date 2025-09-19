@@ -1,0 +1,184 @@
+[
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.267494678497314,
+        31.314414864511335
+      ]
+    },
+    "properties": {
+      "description": "Rafah_01",
+      "imageUrl": "/uploads/1757882455469-Calvert_Jones_-_The_Harbor_at_Valletta_Malta_1850s_-_(MeisterDrucke-1184422).jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.320656061172485,
+        31.30320424532715
+      ]
+    },
+    "properties": {
+      "description": "Francis_dave",
+      "imageUrl": "/uploads/1757883258822-Francis_Frith_-_The_Pool_of_Hezekiah_from_the_Tower_of_Hippicus_Jerusalem_1857_-_(MeisterDrucke-1184103).jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.320656061172485,
+        31.30320424532715
+      ]
+    },
+    "properties": {
+      "description": "image of the landmaek",
+      "imageUrl": "/uploads/1757924455777-test_02.jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.320645332336426,
+        31.30321341236366
+      ]
+    },
+    "properties": {
+      "description": "test_descriptions",
+      "imageUrl": "/uploads/1757927214938-test_02.jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.267494678497314,
+        31.314414864511335
+      ]
+    },
+    "properties": {
+      "description": "دذدذطد",
+      "imageUrl": "/uploads/1758109966200-test_03.jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.320656061172485,
+        31.30320424532715
+      ]
+    },
+    "properties": {
+      "description": "يسي",
+      "imageUrl": "/uploads/1758278177298-test_02.jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.320656061172485,
+        31.30320424532715
+      ]
+    },
+    "properties": {
+      "description": "يسي",
+      "imageUrl": "/uploads/1758278177303-test_02.jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.320656061172485,
+        31.30320424532715
+      ]
+    },
+    "properties": {
+      "description": "يسي",
+      "imageUrl": "/uploads/1758278177310-test_02.jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.24540400505066,
+        31.34419947740706
+      ]
+    },
+    "properties": {
+      "description": "يسش",
+      "imageUrl": "/uploads/1758278209386-test_03.jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.320656061172485,
+        31.30320424532715
+      ]
+    },
+    "properties": {
+      "description": "سس",
+      "imageUrl": "/uploads/1758279368814-test_01.webp"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.3152379989624,
+        31.29506356486847
+      ]
+    },
+    "properties": {
+      "description": "اغ",
+      "imageUrl": "/uploads/1758279388176-test_02.jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.24540400505066,
+        31.34419947740706
+      ]
+    },
+    "properties": {
+      "description": "لفغ",
+      "imageUrl": "/uploads/1758279402905-test_04.jpg"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        34.320656061172485,
+        31.30320424532715
+      ]
+    },
+    "properties": {
+      "description": "يسشي",
+      "imageUrl": "/uploads/1758281507779-test_01.webp"
+    }
+  }
+]
