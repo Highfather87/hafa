@@ -1,0 +1,115 @@
+body { margin: 0; padding: 0;
+}
+
+#map { position: absolute; top: 0; bottom: 0; width: 100%; 
+        
+}
+
+.legend {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba (255, 255, 255, 0.9);
+    border-radius: 5px;
+    font-family: sans-serif;
+    padding: 10px;
+    z-index: 1;
+    box-shadow: 0 0 5px rgba (0,0,0,0.3);
+}
+
+
+/* #uploadForm {
+    position: absolute; top: 10px; left: 10px; background: white; padding: 10px; border-radius: 8px;
+    display: none; flex-direction: column; gap: 5px;
+    } */
+
+.legend input {
+    margin-right: 5px;
+} 
+
+.mapboxgl-popup {
+    max-width: 400px;
+    font:
+        12px/20px 'Helvetica Neue',
+        Arial,
+        Helvetica,
+        sans-serif;
+} 
+
+    #soju {
+background: #fff;
+position: absolute;
+z-index: 1;
+top: 10px;
+right: 10px;
+border-radius: 3px;
+width: 120px;
+border: 1px solid rgba(0, 0, 0, 0.4);
+font-family: 'Open Sans', sans-serif; 
+}
+
+#soju a {
+    font-size: 13px;
+color: #404040;
+display: block;
+margin: 0;
+padding: 0;
+padding: 10px;
+text-decoration: none;
+border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+text-align: center;
+}
+
+#soju a:last-child {
+border: none;
+}
+
+#soju a:hover {
+background-color: #f8f8f8;
+color: #404040;
+}
+
+#soju a.active {
+background-color: #3887be;
+color: #ffffff;
+}
+
+#soju a.active:hover {
+background: #3074a4;
+} 
+
+#menu {
+    position: absolute;
+    background: #efefef;
+    padding: 10px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.upload-container {
+display: none; /* hidden until triggered */
+position: absolute;
+top: 50%; 
+left: 50%;
+transform: translate(-50%, -50%);
+background: white;
+padding: 20px 30px;
+border-radius: 12px;
+box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+text-align: center;
+max-width: 400px;
+width: 90%;
+}
+
+.close {
+position: absolute;
+top: 8px;
+right: 12px;
+font-size: 24px;
+font-weight: bold;
+color: #555;
+cursor: pointer;
+}
+
+.close:hover {
+color: red;
+}
