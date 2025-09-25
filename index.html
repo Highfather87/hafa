@@ -184,7 +184,7 @@
   <div id="uploadFormContainer" class="upload-container">
     <span id="closeForm" class="close">&times;</span>
     <h2>تحميل صورة</h2>
-    <form id="uploadForm" method="POST" action="http://localhost:3000/upload" enctype="multipart/form-data">
+    <form id="uploadForm" method="POST" action="https://hafa-ha2k.onrender.com/upload" enctype="multipart/form-data">
         <input type="file" name="image" accept="image/*" required />
         <input 
             type="text" 
@@ -541,7 +541,7 @@
         e.preventDefault();
         const formData = new FormData(uploadForm);
 
-        const res = await fetch("http://localhost:3000/upload", {
+        const res = await fetch("https://hafa-ha2k.onrender.com/upload", {
             method: "POST",
             body: formData
         });
