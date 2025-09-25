@@ -353,7 +353,11 @@
         }
 
         // Enumerate ids of the layers.
-        const toggleableLayerIds = ['rafah-streets', 'rafah-neighborhoods', 'rafah-landmarks', 'rafah-admin-boundaries-fill'];
+        const toggleableLayerIds = [
+            'rafah-streets', 
+            'rafah-neighborhoods', 
+            'rafah-landmarks', 
+            'rafah-admin-boundaries-fill'];
 
         // Set up the corresponding toggle button for each layer.
         for (const id of toggleableLayerIds) {
@@ -398,8 +402,47 @@
             layers.appendChild(link);
         }
 
+            // 🔥 Add the “Add Landmark” option if not already added
+        if (!document.getElementById('toggle-add-landmark')) {
+            const addLandmarkLink = document.createElement('a');
+            addLandmarkLink.id = 'toggle-add-landmark';
+            addLandmarkLink.href = '#';
+            addLandmarkLink.textContent = '➕ Add Landmark';
+            document.getElementById('soju').appendChild(addLandmarkLink);
+
+            let addLandmarkMode = false;
+
+            // Toggle add-landmark mode on click
+            addLandmarkLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                addLandmarkMode = !addLandmarkMode;
+                addLandmarkLink.classList.toggle('active', addLandmarkMode);
+
+                if (addLandmarkMode) {
+                    alert('📍 Click anywhere on the map to add a new landmark');
+                }
+            });
+
+            // Handle map clicks when in add-landmark mode
+            map.on('click', (e) => {
+                if (!addLandmarkMode) return;
+
+                const lng = e.lngLat.lng;
+                const lat = e.lngLat.lat;
+
+                // Show upload form
+                formContainer.style.display = 'block';
+                uploadForm.lng.value = lng;
+                uploadForm.lat.value = lat;
+
+                // Reset mode after choosing location
+                addLandmarkMode = false;
+                addLandmarkLink.classList.remove('active');
+            });
+        }
+
      });
     
-    document.getElementById("arabicInput").addEventListener("input", function() {
-    this.value = this.value.replace(/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\u0660-\u0669،؛؟\s]/g, '');
-    });
+document.getElementById("arabicInput").addEventListener("input", function() {
+this.value = this.value.replace(/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\u0660-\u0669،؛؟\s]/g, '');
+});
