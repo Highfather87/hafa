@@ -8,27 +8,33 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
 <style>
     
-body { margin: 0; padding: 0; }
-#map { position: absolute; top: 0; bottom: 0; width: 100%; }
-.legend {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: rgba (255, 255, 255, 0.9);
-    border-radius: 5px;
-    font-family: sans-serif;
-    padding: 10px;
-    z-index: 1;
-    box-shadow: 0 0 5px rgba (0,0,0,0.3);
-}
- #uploadForm {
-      position: absolute; top: 10px; left: 10px; background: white; padding: 10px; border-radius: 8px;
-      display: none; flex-direction: column; gap: 5px;
+    body { margin: 0; padding: 0;
     }
 
-.legend input {
-    margin-right: 5px;
-} 
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; 
+            
+    }
+    .legend {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: rgba (255, 255, 255, 0.9);
+        border-radius: 5px;
+        font-family: sans-serif;
+        padding: 10px;
+        z-index: 1;
+        box-shadow: 0 0 5px rgba (0,0,0,0.3);
+    }
+
+
+    /* #uploadForm {
+        position: absolute; top: 10px; left: 10px; background: white; padding: 10px; border-radius: 8px;
+        display: none; flex-direction: column; gap: 5px;
+        } */
+    
+    .legend input {
+        margin-right: 5px;
+    } 
 </style>
 </head>
 <body>
@@ -40,8 +46,10 @@ body { margin: 0; padding: 0; }
             Arial,
             Helvetica,
             sans-serif;
-    }
+    } 
     </style>
+
+    <!-- Layers legend-->
     <style>
         #soju {
         background: #fff;
@@ -94,6 +102,36 @@ body { margin: 0; padding: 0; }
             font-family: 'Open Sans', sans-serif;
         }
     </style>
+    <style>
+   
+        .upload-container {
+            display: none; /* hidden until triggered */
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+        }
+        .close:hover {
+        color: red;
+        }
+    </style>
 
 
 
@@ -101,7 +139,7 @@ body { margin: 0; padding: 0; }
 <nav id="soju"></nav> 
 <div id="map"></div>
 
-
+<!--
 <div class="legend" id="legend">
     <h4>Layers</h4>
     <div>
@@ -123,7 +161,7 @@ body { margin: 0; padding: 0; }
 
 
 </div>
- 
+ -->
 
 
 <div id="menu">
@@ -142,13 +180,32 @@ body { margin: 0; padding: 0; }
 <!-- 
 
 -->
-<form id="uploadForm" enctype="multipart/form-data">
-  <input type="file" name="image" accept="image/*" required />
-  <input type="text" name="description" placeholder="Description" />
-  <input type="hidden" name="lng" />
-  <input type="hidden" name="lat" />
-  <button type="submit">Upload</button>
-</form>
+<div class="page-wrapper">
+  <div id="uploadFormContainer" class="upload-container">
+    <span id="closeForm" class="close">&times;</span>
+    <h2>تحميل صورة</h2>
+    <form id="uploadForm" method="POST" action="http://localhost:3000/upload" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required />
+        <input 
+            type="text" 
+            name="description" 
+            id="arabicInput"
+            placeholder="الوصف"
+            pattern="^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\u0660-\u0669،؛؟\s]+$"
+            title="الرجاء إدخال الحروف والأرقام العربية فقط"
+            required
+        />
+        <br><br>
+        <input type="hidden" name="lng" />
+        <input type="hidden" name="lat" />
+        <button type="submit">رفع</button>
+    </form>
+    </div>
+</div>
+
+<style>
+
+</style>
 
 <script>
 
@@ -164,7 +221,10 @@ body { margin: 0; padding: 0; }
     const layerList = document.getElementById('menu');
     const inputs = layerList.getElementsByTagName('input');
 
+    const formContainer = document.getElementById("uploadFormContainer");
     const uploadForm = document.getElementById("uploadForm");
+    const closeBtn = document.getElementById("closeForm");
+
 
     let clickedCoords = null;       
 
@@ -175,6 +235,10 @@ body { margin: 0; padding: 0; }
         };
     }
 
+
+    map.on('load', () => {
+        // Add default layers here
+    });
 
     map.on('style.load', () =>
     {
@@ -205,7 +269,7 @@ body { margin: 0; padding: 0; }
             data: 'data/rafah-streets.geojson'
         })
 
-           map.addLayer({
+        map.addLayer({
             id: 'rafah-admin-boundaries-fill',
             type: 'fill',
             source: 'rafah-admin-boundaries',
@@ -248,7 +312,6 @@ body { margin: 0; padding: 0; }
             }
         });
 
-     
 
         map.addLayer({
             id: 'rafah-admin-boundaries-labels',
@@ -298,79 +361,49 @@ body { margin: 0; padding: 0; }
        
         }) */
 
-        // Radio buttons behavior
-        const radios = document.querySelectorAll('input[name="layer-toggle"]');
-        radios.forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                layerIds.forEach(layerId => {
-                    map.setLayoutProperty(
-                        layerId,
-                        'visibility',
-                        layerId === e.target.value ? 'visible' : 'none'
-                        );
-                    });
-                });
-             });
+
 
         // When a click event occurs on a feature in the places layer, open a popup at the
         
         // location of the feature, with description HTML from its properties.
 
-        map.addInteraction('landmark-click-interaction', {
-            type: 'click',
-            target: { layerId: 'rafah-landmarks' },
-            handler: (e) => {
-                const coordinates = e.feature.geometry.coordinates.slice();
-                const name = e.feature.properties.Name;
+        // map.addInteraction('landmark-click-interaction', {
+        //     type: 'click',
+        //     target: { layerId: 'rafah-landmarks' },
+        //     handler: (e) => {
+        //         const coordinates = e.feature.geometry.coordinates.slice();
+        //         const name = e.feature.properties.Name;
 
-                // Add a unique ID to the link so we can listen for clicks
-                new mapboxgl.Popup()
-                    .setLngLat(coordinates)
-                    .setHTML(`
-                        <strong>${name}</strong>
-                        <p><a href="#" id="upload-link">Upload image</a></p>
-                    `)
-                    .addTo(map);
+        //         // Add a unique ID to the link so we can listen for clicks
+        //         new mapboxgl.Popup()
+        //             .setLngLat(coordinates)
+        //             .setHTML(`
+        //                 <strong>${name}</strong>
+        //                 <p><a href="#" id="upload-link">Upload image</a></p>
+        //             `)
+        //             .addTo(map);
 
-                // Wait until popup is in DOM, then attach click handler
-                setTimeout(() => {
-                    const link = document.getElementById("upload-link");
-                    if (link) {
-                        link.addEventListener("click", (event) => {
-                            event.preventDefault();
+        //         // Wait until popup is in DOM, then attach click handler
+        //         setTimeout(() => {
+        //             const link = document.getElementById("upload-link");
+        //             if (link) {
+        //                 link.addEventListener("click", (event) => {
+        //                     event.preventDefault();
 
-                            // Open upload form
-                            const uploadForm = document.getElementById("uploadForm");
-                            uploadForm.style.display = "flex";
+        //                     // Open upload form
+        //                     const uploadForm = document.getElementById("uploadForm");
+        //                     uploadForm.style.display = "flex";
 
-                            // Fill hidden fields with landmark coordinates
-                            uploadForm.lng.value = coordinates[0];
-                            uploadForm.lat.value = coordinates[1];
-                        });
-                    }
-                }, 0);
-            }
-        });
+        //                     // Fill hidden fields with landmark coordinates
+        //                     uploadForm.lng.value = coordinates[0];
+        //                     uploadForm.lat.value = coordinates[1];
+        //                 });
+        //             }
+        //         }, 0);
+        //     }
+        // });
 
-        // Handle upload form submit
-        uploadForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(uploadForm);
 
-        const res = await fetch("http://localhost:3000/upload", {
-            method: "POST",
-            body: formData
-        });
-
-        if (res.ok) {
-            alert("Upload successful!");
-            uploadForm.style.display = "none";
-            uploadForm.reset();
-            loadPoints(); // reload markers
-        } else {
-            alert("Upload failed.");
-        }
-        });
 
         // Load points from backend
         async function loadPoints() {
@@ -401,61 +434,128 @@ body { margin: 0; padding: 0; }
         }
         
 
-        // Change the cursor to a pointer when the mouse is over a POI.
-        map.addInteraction('landmark-mouseenter-interaction', {
-            type: 'mouseenter',
-            target: { layerId: 'rafah-landmarks' },
-            handler: () => {
-                map.getCanvas().style.cursor = 'pointer';
-            }
-        });
 
-        // Change the cursor back to a pointer when it stops hovering over a POI.
-        map.addInteraction('landmark-mouseleave-interaction', {
-            type: 'mouseleave',
-            target: { layerId: 'rafah-landmarks' },
-            handler: () => {
-                map.getCanvas().style.cursor = '';
-            }
-        });
-
-        const popup_hover = new mapboxgl.Popup({
-            closeButton: false,
-            closeOnClick: false
-        });
-
-        map.on('mousemove', 'rafah-landmarks', (e) => {
-            // Change the cursor style as a UI indicator.
-            map.getCanvas().style.cursor = 'pointer';
-
-            // Copy coordinates array.
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            const name = e.features[0].properties.Name;
-
-            // Ensure that if the map is zoomed out such that multiple
-            // copies of the feature are visible, the popup appears
-            // over the copy being pointed to.
-            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-            }
-
-            // Populate the popup and set its coordinates
-            // based on the feature found.
-            popup_hover.setLngLat(coordinates).setHTML(`<strong>${name}</strong>`).addTo(map);
-        });
-
-        // Remove popup when not hovering
-        map.on('mouseleave', 'rafah-landmarks', () => {
-            map.getCanvas().style.cursor = '';
-            popup_hover.remove();
-        });
 
     });
 
+    // Radio buttons behavior
+    const radios = document.querySelectorAll('input[name="layer-toggle"]');
+    radios.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+        layerIds.forEach(layerId => {
+            map.setLayoutProperty(
+                layerId,
+                'visibility',
+                layerId === e.target.value ? 'visible' : 'none'
+                );
+            });
+        });
+        });
+    // Change the cursor to a pointer when the mouse is over a POI.
+    map.addInteraction('landmark-mouseenter-interaction', {
+        type: 'mouseenter',
+        target: { layerId: 'rafah-landmarks' },
+        handler: () => {
+            map.getCanvas().style.cursor = 'pointer';
+        }
+    });
 
-    map.on("load", loadPoints);
+    // Change the cursor back to a pointer when it stops hovering over a POI.
+    map.addInteraction('landmark-mouseleave-interaction', {
+        type: 'mouseleave',
+        target: { layerId: 'rafah-landmarks' },
+        handler: () => {
+            map.getCanvas().style.cursor = '';
+        }
+    });
 
-    // After the last frame rendered before the map enters an "idle" state.
+    const popup_hover = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    map.on('mousemove', 'rafah-landmarks', (e) => {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+
+        // Copy coordinates array.
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const name = e.features[0].properties.Name;
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+        popup_hover.setLngLat(coordinates).setHTML(`<strong>${name}</strong>`).addTo(map);
+    });
+    // Remove popup when not hovering
+    map.on('mouseleave', 'rafah-landmarks', () => {
+        map.getCanvas().style.cursor = '';
+        popup_hover.remove();
+    });
+
+
+    // map.on("load", loadPoints);
+
+
+    map.on('click', 'rafah-landmarks', (e) => {
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const name = e.features[0].properties.Name;
+
+        new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(`
+            <strong>${name}</strong>
+            <p><a href="#" id="upload-link">رفع صورة</a></p>
+            `)
+            .addTo(map);
+
+        // Wait until popup is added to DOM
+        setTimeout(() => {
+            const link = document.getElementById("upload-link");
+            if (link) {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                // Show full container
+                formContainer.style.display = "block";
+                // Fill hidden fields
+                uploadForm.lng.value = coordinates[0];
+                uploadForm.lat.value = coordinates[1];
+            });
+            }
+        }, 0);
+    });
+
+    // Close button
+    closeBtn.addEventListener("click", () => {
+    formContainer.style.display = "none";
+    });
+
+    // Handle upload form submit
+    uploadForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(uploadForm);
+
+        const res = await fetch("http://localhost:3000/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        if (res.ok) {
+        alert("✅ Upload successful!");
+        formContainer.style.display = "none"; // hide full dialog
+        uploadForm.reset();
+        loadPoints(); // refresh uploaded markers
+        } else {
+            alert("❌ Upload failed.");
+        }
+    });
+    // After the last frame rendered before the map enters an "idle" state, layer maps are added here to the map.
     map.on('idle', () => {
         // If these two layers were not added to the map, abort
         if (!map.getLayer('rafah-streets') ||  !map.getLayer('rafah-admin-boundaries-fill')) {
@@ -509,7 +609,10 @@ body { margin: 0; padding: 0; }
         }
 
      });
-
+    
+    document.getElementById("arabicInput").addEventListener("input", function() {
+    this.value = this.value.replace(/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\u0660-\u0669،؛؟\s]/g, '');
+    });
 </script>
 
 </body>
