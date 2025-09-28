@@ -1,5 +1,13 @@
 
-    //Rafah 
+    /* 
+    1. Rafah Landmarks - معالم في رفح
+    2. Rafah Streets - شوارع في رفح
+    3. Admin Boundaries - أحياء رفح الإدارية
+    4. Rafah Neighborhoods - أحياء رفح المعاشة    
+    */ 
+
+    //need to swap out with Feb's own token
+
 	mapboxgl.accessToken = 'pk.eyJ1IjoiZmlzaGZhdGhlciIsImEiOiJjbGRzcjI4M2kyMDV6M250NjdwNnBrMTMzIn0.bRvtyOBQKvF2H-F10EwfFQ';
     const map = new mapboxgl.Map({
         container: 'map', // container ID
@@ -66,8 +74,7 @@
             paint: {
                 'fill-color':'#8cb03f',
                 'fill-opacity': 0.7,
-                'fill-outline-color': '#000',
-                /*['match',['get','fid'],1,'green', 2,'purple',3,'red',4,'orange',5,'yellow',6,'brown',7,'pink',8,'purple',9,'grey',10,'red','steelblue' ]   }*/  
+                'fill-outline-color': '#000', 
             }
         })
 
@@ -136,64 +143,6 @@
             },
             //'source-layer': 'rafah-landmarks'
         });       
-
-/*    
-        map.addLayer({
-            id: 'rafah-admin-boundaries-line',
-            type: 'line',
-            source: 'rafah-admin-boundaries',
-            paint: {
-                'line-color': 'black',
-                'line-width': 0.2
-            }
-        }) */
-/*
-       
-        }) */
-
-
-
-        // When a click event occurs on a feature in the places layer, open a popup at the
-        
-        // location of the feature, with description HTML from its properties.
-
-        // map.addInteraction('landmark-click-interaction', {
-        //     type: 'click',
-        //     target: { layerId: 'rafah-landmarks' },
-        //     handler: (e) => {
-        //         const coordinates = e.feature.geometry.coordinates.slice();
-        //         const name = e.feature.properties.Name;
-
-        //         // Add a unique ID to the link so we can listen for clicks
-        //         new mapboxgl.Popup()
-        //             .setLngLat(coordinates)
-        //             .setHTML(`
-        //                 <strong>${name}</strong>
-        //                 <p><a href="#" id="upload-link">Upload image</a></p>
-        //             `)
-        //             .addTo(map);
-
-        //         // Wait until popup is in DOM, then attach click handler
-        //         setTimeout(() => {
-        //             const link = document.getElementById("upload-link");
-        //             if (link) {
-        //                 link.addEventListener("click", (event) => {
-        //                     event.preventDefault();
-
-        //                     // Open upload form
-        //                     const uploadForm = document.getElementById("uploadForm");
-        //                     uploadForm.style.display = "flex";
-
-        //                     // Fill hidden fields with landmark coordinates
-        //                     uploadForm.lng.value = coordinates[0];
-        //                     uploadForm.lat.value = coordinates[1];
-        //                 });
-        //             }
-        //         }, 0);
-        //     }
-        // });
-
-
 
         // Load points from backend
         async function loadPoints() {
@@ -345,103 +294,109 @@
             alert("❌ Upload failed.");
         }
     });
-    // After the last frame rendered before the map enters an "idle" state, layer maps are added here to the map.
+
+
     map.on('idle', () => {
-        // If these two layers were not added to the map, abort
-        if (!map.getLayer('rafah-streets') ||  !map.getLayer('rafah-admin-boundaries-fill')) {
-            return;
+    if (!map.getLayer('rafah-streets') || !map.getLayer('rafah-admin-boundaries-fill')) {
+        return;
+    }
+
+
+    const toggleableLayerIds = [
+        'شوارع في رفح', //streets
+        'أحياء رفح المعاشة', //neighborhoods
+        'معالم في رفح', //landmarks
+        'أحياء رفح الإدارية'//admin boundaries
+    ];
+
+    for (const id of toggleableLayerIds) {
+        if (document.getElementById(id)) {
+            continue;
         }
 
-        // Enumerate ids of the layers.
-        const toggleableLayerIds = [
-            'rafah-streets', 
-            'rafah-neighborhoods', 
-            'rafah-landmarks', 
-            'rafah-admin-boundaries-fill'];
+        const link = document.createElement('a');
+        link.id = id;
+        link.href = '#';
+        link.textContent = id;
+        link.className = 'active';
 
-        // Set up the corresponding toggle button for each layer.
-        for (const id of toggleableLayerIds) {
-            // Skip layers that already have a button set up.
-            if (document.getElementById(id)) {
-                continue;
+        link.onclick = function (e) {
+            const clickedLayer = this.textContent;
+            e.preventDefault();
+            e.stopPropagation();
+
+            const visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+            if (visibility === 'visible') {
+                map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+                this.className = '';
+            } else {
+                this.className = 'active';
+                map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+            }
+        };
+
+        document.getElementById('soju').appendChild(link);
+    }
+
+    // 🔥 Add the “Add Landmark” option if not already added
+    if (!document.getElementById('toggle-add-landmark')) {
+        const addLandmarkLink = document.createElement('a');
+        addLandmarkLink.id = 'toggle-add-landmark';
+        addLandmarkLink.href = '#';
+        addLandmarkLink.textContent = '➕ Add Landmark';
+        document.getElementById('soju').appendChild(addLandmarkLink);
+
+        let addLandmarkMode = false;
+        let tempMarker = null; // will hold the temporary marker
+
+        addLandmarkLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            addLandmarkMode = !addLandmarkMode;
+            addLandmarkLink.classList.toggle('active', addLandmarkMode);
+
+            if (addLandmarkMode) {
+                alert('📍 Click anywhere on the map to add a new landmark');
+                map.getCanvas().style.cursor = 'crosshair'; // change cursor
+            }
+            else {
+                map.getCanvas().style.cursor = ''; // reset cursor
+                if (tempMarker) {
+                    tempMarker.remove();
+                    tempMarker = null;
+                }
+            }
+        });
+
+        // Handle map clicks when in add-landmark mode
+        map.on('click', (e) => {
+            if (!addLandmarkMode) return;
+
+            const lng = e.lngLat.lng;
+            const lat = e.lngLat.lat;
+
+            // Remove old temp marker if exists
+            if (tempMarker) {
+                tempMarker.remove();
             }
 
-            // Create a link.
-            const link = document.createElement('a');
-            link.id = id;
-            link.href = '#';
-            link.textContent = id;
-            link.className = 'active';
+            // Add a new temporary marker
+            tempMarker = new mapboxgl.Marker({ color: 'red' })
+                .setLngLat([lng, lat])
+                .addTo(map);
 
-            // Show or hide layer when the toggle is clicked.
-            link.onclick = function (e) {
-                const clickedLayer = this.textContent;
-                e.preventDefault();
-                e.stopPropagation();
+            // Show upload form
+            formContainer.style.display = 'block';
+            uploadForm.lng.value = lng;
+            uploadForm.lat.value = lat;
 
-                const visibility = map.getLayoutProperty(
-                    clickedLayer,
-                    'visibility'
-                );
-
-                // Toggle layer visibility by changing the layout object's visibility property.
-                if (visibility === 'visible') {
-                    map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-                    this.className = '';
-                } else {
-                    this.className = 'active';
-                    map.setLayoutProperty(
-                        clickedLayer,
-                        'visibility',
-                        'visible'
-                    );
-                }
-            };
-
-            const layers = document.getElementById('soju');
-            layers.appendChild(link);
-        }
-
-            // 🔥 Add the “Add Landmark” option if not already added
-        if (!document.getElementById('toggle-add-landmark')) {
-            const addLandmarkLink = document.createElement('a');
-            addLandmarkLink.id = 'toggle-add-landmark';
-            addLandmarkLink.href = '#';
-            addLandmarkLink.textContent = '➕ Add Landmark';
-            document.getElementById('soju').appendChild(addLandmarkLink);
-
-            let addLandmarkMode = false;
-
-            // Toggle add-landmark mode on click
-            addLandmarkLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                addLandmarkMode = !addLandmarkMode;
-                addLandmarkLink.classList.toggle('active', addLandmarkMode);
-
-                if (addLandmarkMode) {
-                    alert('📍 Click anywhere on the map to add a new landmark');
-                }
-            });
-
-            // Handle map clicks when in add-landmark mode
-            map.on('click', (e) => {
-                if (!addLandmarkMode) return;
-
-                const lng = e.lngLat.lng;
-                const lat = e.lngLat.lat;
-
-                // Show upload form
-                formContainer.style.display = 'block';
-                uploadForm.lng.value = lng;
-                uploadForm.lat.value = lat;
-
-                // Reset mode after choosing location
-                addLandmarkMode = false;
-                addLandmarkLink.classList.remove('active');
-            });
-        }
-
-     });
+            // Exit add-landmark mode (single use)
+            addLandmarkMode = false;
+            addLandmarkLink.classList.remove('active');
+            map.getCanvas().style.cursor = ''; // reset cursor
+        });
+    }
+});
     
 document.getElementById("arabicInput").addEventListener("input", function() {
 this.value = this.value.replace(/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\u0660-\u0669،؛؟\s]/g, '');
