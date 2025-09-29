@@ -302,12 +302,14 @@
     }
 
 
-    const toggleableLayerIds = [
-        'شوارع في رفح', //streets
-        'أحياء رفح المعاشة', //neighborhoods
-        'معالم في رفح', //landmarks
-        'أحياء رفح الإدارية'//admin boundaries
-    ];
+    const layerLabels = {
+        'rafah-streets': 'شوارع في رفح',
+        'rafah-neighborhoods': 'أحياء رفح المعاشة',
+        'rafah-landmarks': 'معالم في رفح',
+        'rafah-admin-boundaries-fill': 'أحياء رفح الإدارية'
+    };
+
+    const toggleableLayerIds = Object.keys(layerLabels);
 
     for (const id of toggleableLayerIds) {
         if (document.getElementById(id)) {
@@ -317,14 +319,15 @@
         const link = document.createElement('a');
         link.id = id;
         link.href = '#';
-        link.textContent = id;
+        link.textContent = layerLabels[id]; //Arabic label
         link.className = 'active';
 
         link.onclick = function (e) {
-            const clickedLayer = this.textContent;
+            //const clickedLayer = this.textContent;
             e.preventDefault();
             e.stopPropagation();
 
+            const clickedLayer = this.id;
             const visibility = map.getLayoutProperty(clickedLayer, 'visibility');
 
             if (visibility === 'visible') {
