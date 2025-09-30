@@ -146,7 +146,7 @@
 
         // Load points from backend
         async function loadPoints() {
-        const res = await fetch("https://hafa-ha2k.onrender.com/landmarks");
+        const res = await fetch("https://hafa-1.onrender.com/landmarks");
         const data = await res.json();
 
         if (map.getSource("uploads")) {
@@ -285,7 +285,7 @@
         e.preventDefault();
         const formData = new FormData(uploadForm);
 
-        const res = await fetch("https://hafa-ha2k.onrender.com/upload", {
+        const res = await fetch("https://hafa-1.onrender.com/upload", {
             method: "POST",
             body: formData
         });
