@@ -146,7 +146,7 @@
 
         // Load points from backend
         async function loadPoints() {
-        const res = await fetch("http://localhost:3000/points");
+        const res = await fetch("https://hafa-ha2k.onrender.com/landmarks");
         const data = await res.json();
 
         if (map.getSource("uploads")) {
@@ -160,13 +160,18 @@
             layout: { "icon-image": "marker-15", "icon-size": 1.5 }
             });
 
-            // Popup with image
+            // Popup with image + description
             map.on("click", "uploads-layer", (e) => {
             const feature = e.features[0];
-            const { imageUrl, description } = feature.properties;
+            const { Description, Image, Name } = feature.properties;
+
             new mapboxgl.Popup()
                 .setLngLat(feature.geometry.coordinates)
-                .setHTML(`<img src="http://localhost:3000${imageUrl}" width="200"><p>${description}</p>`)
+                .setHTML(`
+                <strong>${Name}</strong><br>
+                ${Image ? `<img src="https://hafa-ha2k.onrender.com${Image}" width="200">` : ""}
+                <p>${Description || ""}</p>
+                `)
                 .addTo(map);
             });
         }

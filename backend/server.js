@@ -1,53 +1,75 @@
 import express from "express";
 import multer from "multer";
 import fs from "fs";
+import path from "path";
+import cors from "cors";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Enable CORS (so your frontend can call API)
-import cors from "cors";
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
+
+// Ensure uploads and data folders exist
+fs.mkdirSync("uploads", { recursive: true });
+fs.mkdirSync("data", { recursive: true });
+
+const DATA_FILE = path.join("data", "landmarks.json");
+
+// If no landmarks.json exists, initialize it
+if (!fs.existsSync(DATA_FILE)) {
+  const empty = { type: "FeatureCollection", features: [] };
+  fs.writeFileSync(DATA_FILE, JSON.stringify(empty, null, 2));
+}
 
 // Multer setup for saving uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + file.originalname;
+    const safeName = (req.body.name || "landmark")
+      .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9_-]/g, "");
+    const uniqueName = `${safeName}_${Date.now()}${path.extname(file.originalname)}`;
     cb(null, uniqueName);
   }
 });
 const upload = multer({ storage });
 
-// Simple JSON file for storing metadata
-const DATA_FILE = "data.json";
-if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, JSON.stringify([]));
-
-// Upload endpoint
+/**
+ * POST /upload
+ * Upload a landmark (name, description, lng, lat, image)
+ */
 app.post("/upload", upload.single("image"), (req, res) => {
-  const { lng, lat, description } = req.body;
-  const imageUrl = `/uploads/${req.file.filename}`;
+  const { name, description, lng, lat } = req.body;
 
-  const newPoint = {
+  const newFeature = {
     type: "Feature",
-    geometry: { type: "Point", coordinates: [parseFloat(lng), parseFloat(lat)] },
-    properties: { description, imageUrl }
+    geometry: {
+      type: "Point",
+      coordinates: [parseFloat(lng), parseFloat(lat)]
+    },
+    properties: {
+      Name: name || "Unnamed Landmark",
+      Description: description || "",
+      Image: req.file ? `/uploads/${req.file.filename}` : null
+    }
   };
 
-  // Save to JSON database
   const data = JSON.parse(fs.readFileSync(DATA_FILE));
-  data.push(newPoint);
+  data.features.push(newFeature);
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 
-  res.json({ success: true, point: newPoint });
+  res.json({ success: true, feature: newFeature });
 });
 
-// Endpoint to fetch all uploaded points
-app.get("/points", (req, res) => {
+/**
+ * GET /landmarks
+ * Returns all saved landmarks as GeoJSON
+ */
+app.get("/landmarks", (req, res) => {
   const data = JSON.parse(fs.readFileSync(DATA_FILE));
-  res.json({ type: "FeatureCollection", features: data });
+  res.json(data);
 });
 
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
