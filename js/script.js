@@ -53,7 +53,8 @@
         map.addSource('rafah-neighborhoods',
         {
             type: 'geojson',
-            data: 'data/rafah-neighborhoods.geojson'
+            data: 'data/rafah-neighborhoods.geojson',
+            generateId: true // This ensures that each feature has a unique ID
         })
         map.addSource('rafah-landmarks',
         {
@@ -91,6 +92,90 @@
                 'fill-opacity': 0.5
             }
         });
+
+        // --- Add an outline layer for neighborhood boundaries ---
+        map.addLayer({
+        id: 'rafah-neighborhoods-outline',
+        type: 'line',
+        source: 'rafah-neighborhoods',
+        paint: {
+            'line-color': '#000',
+            'line-width': 2,
+            // Only show outline on hovered feature
+            'line-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            1,
+            0
+            ]
+        }
+        });
+
+        // --- Add a label layer for neighborhood names ---
+        map.addLayer({
+        id: 'rafah-neighborhoods-labels',
+        type: 'symbol',
+        source: 'rafah-neighborhoods',
+        layout: {
+            'text-field': ['get', 'Arabic Name '],// Change this if your property key differs
+            'text-font': ['Noto Naskh Arabic Bold', 'Noto Naskh Arabic Regular'],
+            'text-size': 10,
+            'text-anchor': 'center',
+            'text-allow-overlap': true
+        },
+        paint: {
+            'text-color': '#000',
+            'text-halo-color': '#fff',
+            'text-halo-width': 1,
+            // Only visible when hovered
+            'text-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            1,
+            0
+            ]
+        }
+        });
+
+        let hoveredNeighborhoodId = null;
+
+        map.on('mousemove', 'rafah-neighborhoods', (e) => {
+        if (e.features.length > 0) {
+            const neighborhoodName = e.features[0].properties["Arabic Name "];
+            console.log("Hovered Neighborhood:", neighborhoodName);
+            // Remove hover state from previously hovered polygon
+            if (hoveredNeighborhoodId !== null) {
+            map.setFeatureState(
+                { source: 'rafah-neighborhoods', id: hoveredNeighborhoodId },
+                { hover: false }
+            );
+            }
+
+            // Apply hover state to the currently hovered polygon
+            hoveredNeighborhoodId = e.features[0].id;
+            map.setFeatureState(
+            { source: 'rafah-neighborhoods', id: hoveredNeighborhoodId },
+            { hover: true }
+            );
+        }
+        });
+
+        map.on('mouseleave', 'rafah-neighborhoods', () => {
+        // Reset previous polygon state
+            if (hoveredNeighborhoodId !== null) {
+                map.setFeatureState(
+                { source: 'rafah-neighborhoods', id: hoveredNeighborhoodId },
+                { hover: false }
+                );
+            }
+            hoveredNeighborhoodId = null;
+        });
+
+        map.on('mousemove', 'rafah-neighborhoods', (e) => {
+         console.log(Object.keys(e.features[0].properties));
+        });
+
+
 
         map.addLayer({
             'id': 'rafah-streets',
@@ -177,9 +262,11 @@
         }
         }
         
+    map.moveLayer('rafah-neighborhoods-labels');   
 
 
-
+    
+    
     });
 
     // Radio buttons behavior

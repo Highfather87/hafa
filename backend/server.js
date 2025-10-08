@@ -72,4 +72,11 @@ app.get("/landmarks", (req, res) => {
   res.json(data);
 });
 
+app.get("/list-uploads", (req, res) => {
+  fs.readdir("uploads", (err, files) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(files);
+  });
+});
+
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
