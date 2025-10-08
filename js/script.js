@@ -491,8 +491,36 @@
             map.getCanvas().style.cursor = ''; // reset cursor
         });
     }
+
+    // 🟢 Add Help/Instructions legend item if not already present
+    if (!document.getElementById('help-button')) {
+    const helpLink = document.createElement('a');
+    helpLink.id = 'help-button';
+    helpLink.href = '#';
+    helpLink.textContent = 'ℹ️ Instructions';
+    document.getElementById('soju').appendChild(helpLink);
+
+    helpLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('help-dialog').style.display = 'flex';
+    });
+    }
+
+
+
 });
     
 document.getElementById("arabicInput").addEventListener("input", function() {
 this.value = this.value.replace(/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\u0660-\u0669،؛؟\s]/g, '');
+});
+
+// Close help dialog when clicking the × button or background
+document.getElementById('close-help').addEventListener('click', () => {
+  document.getElementById('help-dialog').style.display = 'none';
+});
+
+document.getElementById('help-dialog').addEventListener('click', (e) => {
+  if (e.target.id === 'help-dialog') {
+    document.getElementById('help-dialog').style.display = 'none';
+  }
 });
