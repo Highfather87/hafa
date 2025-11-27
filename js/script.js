@@ -118,7 +118,7 @@
         source: 'rafah-neighborhoods',
         layout: {
             'text-field': ['get', 'Arabic Name '],// Change this if your property key differs
-            'text-font': ['Noto Naskh Arabic Bold', 'Noto Naskh Arabic Regular'],
+            'text-font': ['Scheherazade New', 'Cairo', 'Tajawal','Noto Naskh Arabic Regular' ],
             'text-size': 10,
             'text-anchor': 'center',
             'text-allow-overlap': true
@@ -138,6 +138,8 @@
         });
 
         let hoveredNeighborhoodId = null;
+
+        // Hover interaction for neighborhoods
 
         map.on('mousemove', 'rafah-neighborhoods', (e) => {
         if (e.features.length > 0) {
@@ -304,6 +306,8 @@
         closeButton: false,
         closeOnClick: false
     });
+
+    //hovering over a landmark
 
     map.on('mousemove', 'rafah-landmarks', (e) => {
         // Change the cursor style as a UI indicator.
