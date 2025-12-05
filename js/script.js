@@ -9,12 +9,22 @@
     //need to swap out with Feb's own token
 
 	mapboxgl.accessToken = 'pk.eyJ1IjoiZmlzaGZhdGhlciIsImEiOiJjbGRzcjI4M2kyMDV6M250NjdwNnBrMTMzIn0.bRvtyOBQKvF2H-F10EwfFQ';
+    
+    // use the mapbox-gl-rtl-text to support arabic labels
+    mapboxgl.setRTLTextPlugin(
+        'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+        null,
+        true // Lazy load the plugin
+    );
+
     const map = new mapboxgl.Map({
         container: 'map', // container ID
         style: 'mapbox://styles/mapbox/standard-satellite',
         center: [34.3, 31.3], // starting position [lng, lat]. Note that lat must be set between -90 and 90
         zoom: 12 // starting zoom
     });
+
+
 
     const layerList = document.getElementById('menu');
     const inputs = layerList.getElementsByTagName('input');
