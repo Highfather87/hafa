@@ -453,7 +453,7 @@
         const addLandmarkLink = document.createElement('a');
         addLandmarkLink.id = 'toggle-add-landmark';
         addLandmarkLink.href = '#';
-        addLandmarkLink.textContent = '➕ Add Landmark';
+        addLandmarkLink.textContent = '➕ لاضافة معالم';
         document.getElementById('soju').appendChild(addLandmarkLink);
 
         let addLandmarkMode = false;
@@ -465,7 +465,7 @@
             addLandmarkLink.classList.toggle('active', addLandmarkMode);
 
             if (addLandmarkMode) {
-                alert('📍 Click anywhere on the map to add a new landmark');
+                alert('📍 اضغطوا حيث يتواجد المعلم على الخريطة لاضافت'); // Click anywhere on the map to add a new landmark
                 map.getCanvas().style.cursor = 'crosshair'; // change cursor
             }
             else {
@@ -511,7 +511,7 @@
     const helpLink = document.createElement('a');
     helpLink.id = 'help-button';
     helpLink.href = '#';
-    helpLink.textContent = 'ℹ️ Instructions';
+    helpLink.textContent = 'ℹ️ التعليمات';
     document.getElementById('soju').appendChild(helpLink);
 
     helpLink.addEventListener('click', (e) => {
