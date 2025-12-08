@@ -109,7 +109,7 @@
         type: 'line',
         source: 'rafah-neighborhoods',
         paint: {
-            'line-color': '#000',
+            'line-color': '#eee',
             'line-width': 2,
             // Only show outline on hovered feature
             'line-opacity': [
@@ -202,7 +202,7 @@
             },
             'paint': {
                 'line-color': '#000000',
-                'line-width': 3
+                'line-width': 2
             }
         });
 
@@ -465,7 +465,7 @@
             addLandmarkLink.classList.toggle('active', addLandmarkMode);
 
             if (addLandmarkMode) {
-                alert('📍 اضغطوا حيث يتواجد المعلم على الخريطة لاضافت'); // Click anywhere on the map to add a new landmark
+                alert('📍 اضغطوا حيث يتواجد المعلم على الخريطة لاضافته '); // Click anywhere on the map to add a new landmark
                 map.getCanvas().style.cursor = 'crosshair'; // change cursor
             }
             else {
