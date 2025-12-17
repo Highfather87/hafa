@@ -24,6 +24,8 @@
         zoom: 12 // starting zoom
     });
 
+    const API_BASE = "https://hafa-live.onrender.com";
+
 
 
     const layerList = document.getElementById('menu');
@@ -243,7 +245,7 @@
 
         // Load points from backend
         async function loadPoints() {
-        const res = await fetch("https://hafa-1.onrender.com/landmarks");
+        const res = await fetch('${API_BASE}/landmarks');
         const data = await res.json();
 
         if (map.getSource("uploads")) {
@@ -266,7 +268,7 @@
                 .setLngLat(feature.geometry.coordinates)
                 .setHTML(`
                 <strong>${Name}</strong><br>
-                ${Image ? `<img src="https://hafa-ha2k.onrender.com${Image}" width="200">` : ""}
+                ${Image ? `<img src="${Image}" width="200">` : ""}
                 <p>${Description || ""}</p>
                 `)
                 .addTo(map);
@@ -386,7 +388,7 @@
         e.preventDefault();
         const formData = new FormData(uploadForm);
 
-        const res = await fetch("https://hafa-1.onrender.com/upload", {
+        const res = await fetch(`${API_BASE}/upload`, {
             method: "POST",
             body: formData
         });
