@@ -91,6 +91,26 @@
             }
         })
 
+        //--- Add neighborhood labels layer ---
+
+        map.addLayer({
+            id: "rafah-admin-boundaries-labels",
+            type: "symbol",
+            source: "rafah-admin-boundaries",
+            layout: {
+                "text-field": ["get", "Name AR"], // 🔴 change if needed
+                "text-size": 10,
+                "text-font": ['Scheherazade New', 'Cairo', 'Tajawal','Noto Naskh Arabic Regular' ], //['Scheherazade New', 'Cairo', 'Tajawal','Noto Naskh Arabic Regular' ],
+                "text-anchor": "center",
+                "text-allow-overlap": true
+            },
+            paint: {
+                "text-color": "#fff",
+                //"text-halo-color": "#ffffff",
+                "text-halo-width": 1.5
+            }
+        });
+
         map.addLayer({
             'id': 'rafah-neighborhoods',
             'type': 'fill',
@@ -104,6 +124,8 @@
                 'fill-opacity': 0.5
             }
         });
+
+        
 
         // --- Add an outline layer for neighborhood boundaries ---
         map.addLayer({
@@ -122,6 +144,8 @@
             ]
         }
         });
+
+   
 
         // --- Add a label layer for neighborhood names ---
         map.addLayer({
@@ -207,6 +231,8 @@
                 'line-width': 2
             }
         });
+
+        map.moveLayer('rafah-streets', 'rafah-neighborhoods-outline');
 
 
         map.addLayer({
@@ -385,22 +411,41 @@
 
     // Handle upload form submit
     uploadForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(uploadForm);
+    e.preventDefault();
 
-        const res = await fetch(`${API_BASE}/upload`, {
-            method: "POST",
-            body: formData
-        });
+    const formData = new FormData(uploadForm);
 
-        if (res.ok) {
-        alert("✅ Upload successful!");
-        formContainer.style.display = "none"; // hide full dialog
+    // Safety checks
+    if (!formData.get("name")) {
+        alert("❌ يرجى إدخال اسم المعلم");
+        return;
+    }
+
+    if (!formData.get("lng") || !formData.get("lat")) {
+        alert("❌ لم يتم تحديد موقع المعلم");
+        return;
+    }
+
+    // IMPORTANT: image is optional — do nothing if missing
+    const imageFile = formData.get("image");
+    if (imageFile && imageFile.size === 0) {
+        formData.delete("image");
+    }
+
+    const res = await fetch(`${API_BASE}/upload`, {
+        method: "POST",
+        body: formData
+    });
+
+    if (res.ok) {
+        alert("✅ تم حفظ المعلم بنجاح");
+        formContainer.style.display = "none";
         uploadForm.reset();
-        loadPoints(); // refresh uploaded markers
-        } else {
-            alert("❌ Upload failed.");
-        }
+        loadPoints();
+    } else {
+        const err = await res.json();
+        alert("❌ فشل الرفع: " + (err.error || ""));
+    }
     });
 
 
@@ -416,6 +461,17 @@
         'rafah-landmarks': 'معالم في رفح',
         'rafah-admin-boundaries-fill': 'أحياء رفح الإدارية'
     };
+
+
+    //define a layer group to toggle multiple layers together, this case admin districts   
+    const layerGroups = {
+    "rafah-admin-boundaries": [
+        "rafah-admin-boundaries",
+        "rafah-admin-boundaries-labels"
+    ]
+    };
+
+    //toggle layers on and off
 
     const toggleableLayerIds = Object.keys(layerLabels);
 

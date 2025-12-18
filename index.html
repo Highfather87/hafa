@@ -46,7 +46,17 @@
     <span id="closeForm" class="close">&times;</span>
     <h2>تحميل صورة</h2>
     <form id="uploadForm" method="POST" action="https://hafa-1.onrender.com/upload" enctype="multipart/form-data">
-        <input type="file" name="image" accept="image/*" required />
+  
+        <input type="file" name="image" accept="image/*" />
+         <br><br>
+        <label>
+          اسم المعلم
+          <input type="text" name="name" required />
+        </label>
+         <br><br>
+
+        <label>
+          ﻭصف المكان: <!--Is this label correct?-->
         <input 
             type="text" 
             name="description" 
@@ -56,6 +66,7 @@
             title="الرجاء إدخال الحروف والأرقام العربية فقط"
             required
         />
+        </label>
         <br><br>
         <input type="hidden" name="lng" />
         <input type="hidden" name="lat" />
