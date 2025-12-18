@@ -94,7 +94,8 @@ app.get("/landmarks", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("landmarks")
-      .select("*");
+      .select("*")
+      .eq("approved", true); // Only approved landmarks
 
     if (error) throw error;
 

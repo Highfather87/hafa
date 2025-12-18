@@ -62,12 +62,37 @@
             data: 'data/rafah-adm-districts.geojson'
         })
 
+        //neighborhoods source
         map.addSource('rafah-neighborhoods',
         {
             type: 'geojson',
             data: 'data/rafah-neighborhoods.geojson',
             generateId: true // This ensures that each feature has a unique ID
         })
+
+        //supabase uplaods source
+        map.addSource('uploaded-landmarks', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: []
+            }
+            });
+
+        map.addLayer({
+        id: 'uploaded-landmarks-layer',
+        type: 'circle',
+        source: 'uploaded-landmarks',
+        paint: {
+            'circle-radius': 3,
+            'circle-color': '#ff5a5a',
+            'circle-stroke-width': 1,
+            'circle-stroke-color': '#ffffff'
+        }
+        });
+
+
+        //landmark source
         map.addSource('rafah-landmarks',
         {
             type: 'geojson',
@@ -234,20 +259,6 @@
 
         map.moveLayer('rafah-streets', 'rafah-neighborhoods-outline');
 
-
-        map.addLayer({
-            id: 'rafah-admin-boundaries-labels',
-            type: 'symbol',
-            source: 'rafah-admin-boundaries',
-            layout: {
-                'text-field': ['get','Name AR'],
-                'text-font': ['Open Sans Bold'],
-                'text-size': 14,
-                'text-offset': [0, 1.5],
-                'text-anchor': 'top'
-            }
-        })
-
          //add the layers to the map
 
         map.addLayer({
@@ -271,40 +282,21 @@
 
         // Load points from backend
         async function loadPoints() {
-        const res = await fetch('${API_BASE}/landmarks');
+
+        console.log("Loading uploaded landmarks from backend...");
+        const res = await fetch(`${API_BASE}/landmarks`);
         const data = await res.json();
+        console.log("Received landmarks data:", data.features.length);
 
-        if (map.getSource("uploads")) {
-            map.getSource("uploads").setData(data);
-        } else {
-            map.addSource("uploads", { type: "geojson", data });
-            map.addLayer({
-            id: "uploads-layer",
-            type: "symbol",
-            source: "uploads",
-            layout: { "icon-image": "marker-15", "icon-size": 1.5 }
-            });
-
-            // Popup with image + description
-            map.on("click", "uploads-layer", (e) => {
-            const feature = e.features[0];
-            const { Description, Image, Name } = feature.properties;
-
-            new mapboxgl.Popup()
-                .setLngLat(feature.geometry.coordinates)
-                .setHTML(`
-                <strong>${Name}</strong><br>
-                ${Image ? `<img src="${Image}" width="200">` : ""}
-                <p>${Description || ""}</p>
-                `)
-                .addTo(map);
-            });
-        }
+        if (map.getSource('uploaded-landmarks')) {
+            map.getSource('uploaded-landmarks').setData(data);
+        } 
         }
         
     map.moveLayer('rafah-neighborhoods-labels');   
 
-
+    //load landmark points BACKENDBLAST1
+    loadPoints()
     
     
     });
@@ -404,6 +396,55 @@
         }, 0);
     });
 
+
+    map.on('mousemove', 'uploaded-landmarks-layer', (e) => {
+    // Change the cursor style as a UI indicator.
+    map.getCanvas().style.cursor = 'pointer';
+
+    // Copy coordinates array.
+    const coordinates = e.features[0].geometry.coordinates.slice();
+    const name = e.features[0].properties.Name;
+
+    // Ensure that if the map is zoomed out such that multiple
+    // copies of the feature are visible, the popup appears
+    // over the copy being pointed to.
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    popup_hover.setLngLat(coordinates).setHTML(`<strong>${name}</strong>`).addTo(map);
+    });
+
+    // Remove popup when not hovering
+    map.on('mouseleave', 'uploaded-landmarks-layer', () => {
+        map.getCanvas().style.cursor = '';
+        popup_hover.remove();
+    });
+
+    map.on('click', 'uploaded-landmarks-layer', (e) => {
+    const { Name, Description, Image } = e.features[0].properties;
+
+    new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`
+        <h3>${Name}</h3>
+        <p>${Description || ''}</p>
+        ${Image ? `<img src="${Image}"
+         style="
+            width:60px;
+            height:60px;
+            object-fit:cover;
+            border-radius:6px;
+            border:1px solid #ccc;
+            margin-top:6px;
+            ">` : ''}
+        `)
+        .addTo(map);
+    });
+
+
     // Close button
     closeBtn.addEventListener("click", () => {
     formContainer.style.display = "none";
@@ -459,7 +500,8 @@
         'rafah-streets': 'شوارع في رفح',
         'rafah-neighborhoods': 'أحياء رفح المعاشة',
         'rafah-landmarks': 'معالم في رفح',
-        'rafah-admin-boundaries-fill': 'أحياء رفح الإدارية'
+        'rafah-admin-boundaries-fill': 'أحياء رفح الإدارية',
+        'uploaded-landmarks-layer': 'معالم مضافة'
     };
 
 
