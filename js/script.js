@@ -465,17 +465,17 @@
 
     //define a layer group to toggle multiple layers together, this case admin districts   
     const layerGroups = {
-    "rafah-admin-boundaries": [
-        "rafah-admin-boundaries",
+    "rafah-admin-boundaries-fill": [
+        "rafah-admin-boundaries-fill",
         "rafah-admin-boundaries-labels"
     ]
     };
 
     //toggle layers on and off
 
-    const toggleableLayerIds = Object.keys(layerLabels);
+        const toggleableLayerIds = Object.keys(layerLabels);
 
-    for (const id of toggleableLayerIds) {
+        for (const id of toggleableLayerIds) {
         if (document.getElementById(id)) {
             continue;
         }
@@ -483,28 +483,43 @@
         const link = document.createElement('a');
         link.id = id;
         link.href = '#';
-        link.textContent = layerLabels[id]; //Arabic label
+        link.textContent = layerLabels[id];
         link.className = 'active';
 
         link.onclick = function (e) {
-            //const clickedLayer = this.textContent;
             e.preventDefault();
             e.stopPropagation();
 
             const clickedLayer = this.id;
-            const visibility = map.getLayoutProperty(clickedLayer, 'visibility');
 
-            if (visibility === 'visible') {
-                map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-                this.className = '';
-            } else {
-                this.className = 'active';
-                map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+            // Group-aware toggle
+            const layersToToggle = layerGroups[clickedLayer] || [clickedLayer];
+
+            // SAFETY CHECK
+            if (!map.getLayer(layersToToggle[0])) return;
+
+            const currentVisibility = map.getLayoutProperty(
+            layersToToggle[0],
+            'visibility'
+            );
+
+            const newVisibility = currentVisibility === 'visible'
+            ? 'none'
+            : 'visible';
+
+            layersToToggle.forEach(layerId => {
+            if (map.getLayer(layerId)) {
+                map.setLayoutProperty(layerId, 'visibility', newVisibility);
             }
+            });
+
+            this.className = newVisibility === 'visible' ? 'active' : '';
         };
 
         document.getElementById('soju').appendChild(link);
-    }
+        }
+
+    //toggle layer ends 
 
     // 🔥 Add the “Add Landmark” option if not already added
     if (!document.getElementById('toggle-add-landmark')) {
